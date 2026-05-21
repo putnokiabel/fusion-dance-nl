@@ -200,6 +200,7 @@ export const tallyWebhook = onRequest(
     region: 'europe-west1',
     secrets: [TALLY_SIGNING_SECRET, GITHUB_PAT, GITHUB_OWNER, GITHUB_REPO],
     cors: false,
+    invoker: 'public',
   },
   async (req, res) => {
     if (req.method !== 'POST') {
