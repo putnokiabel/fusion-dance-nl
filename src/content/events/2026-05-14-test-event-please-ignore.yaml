@@ -1,0 +1,7 @@
+title: Test event — please ignore
+start: '2026-05-14T02:01:00+02:00'
+location:
+  name: test
+  address: address 123
+summary: test summary
+description: test description
