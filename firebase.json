@@ -5,7 +5,13 @@
     "cleanUrls": true,
     "trailingSlash": false,
     "rewrites": [
-      { "source": "/api/submit-event", "function": "tallyWebhook" }
+      {
+        "source": "/api/submit-event",
+        "function": {
+          "functionId": "tallyWebhook",
+          "region": "europe-west1"
+        }
+      }
     ],
     "headers": [
       {
