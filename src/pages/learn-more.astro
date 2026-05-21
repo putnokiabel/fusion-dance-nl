@@ -1,0 +1,101 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+
+const pillars = [
+  {
+    title: 'Community',
+    body: 'A safe, respectful environment where dancers contribute to a positive shared space.',
+  },
+  {
+    title: 'Respect & Consent',
+    body: 'Boundaries are honoured. Every invitation to dance, every touch, every change in connection can be negotiated and declined.',
+  },
+  {
+    title: 'Inclusivity',
+    body: 'Welcoming people of all backgrounds, identities, body types, and experience levels. Roles are not gendered.',
+  },
+  {
+    title: 'Fun',
+    body: 'Self-expression, connection, and play over performance. Curiosity over correctness.',
+  },
+];
+---
+
+<BaseLayout
+  title="Learn more"
+  description="Learn more about Fusion Dance NL — what fusion dancing is, our values, and who we are."
+>
+  <Hero
+    eyebrow="Learn more"
+    title="A welcoming and inclusive fusion-dance community."
+    body="Based in Utrecht. Open to everyone who wants to move, listen, and connect."
+    illustration="/images/hero-about.webp"
+    illustrationAlt="Dancers at a Fusion Dance NL gathering"
+    imageTheme="dark"
+  />
+
+  <section class="mx-auto max-w-3xl px-6 py-16">
+    <h2 class="font-display text-3xl font-extrabold tracking-tight text-[var(--color-ink)] md:text-4xl">
+      What is fusion dancing?
+    </h2>
+    <div class="prose mt-6 space-y-4 text-lg text-[var(--color-ink)]/90">
+      <p>
+        Fusion is an improvised partner dance that draws on multiple traditions —
+        blues, tango, zouk, contact improv, west coast swing, and more. Rather
+        than picking one style and following its rules, fusion dancers listen
+        to the music and to each other, and let the dance emerge from what
+        feels right in the moment.
+      </p>
+      <p>
+        There's no fixed vocabulary. Beginners and experienced dancers can
+        share a dance because the focus is on connection, weight sharing, and
+        responsive movement rather than memorised figures. Music can range
+        from slow, ambient pieces to driving electronic tracks; the dance
+        adapts.
+      </p>
+      <p>
+        Roles are not gendered. Anyone can lead, anyone can follow, and many
+        dancers move fluidly between roles within a single dance.
+      </p>
+    </div>
+  </section>
+
+  <section class="surface-warm border-y border-[var(--color-line)]">
+    <div class="mx-auto max-w-5xl px-6 py-16">
+      <h2 class="font-display text-3xl font-extrabold tracking-tight text-[var(--color-ink)] md:text-4xl">
+        Our values
+      </h2>
+      <p class="mt-3 max-w-2xl text-[var(--color-muted)]">
+        Four principles guide how we run our events and how we treat each other on and off the floor.
+      </p>
+
+      <ul class="mt-10 grid gap-5 md:grid-cols-2">
+        {
+          pillars.map((p) => (
+            <li class="rounded-[var(--radius-card)] border border-[var(--color-line)] bg-[var(--color-surface)] p-6">
+              <h3 class="font-display text-xl font-bold text-[var(--color-accent)]">{p.title}</h3>
+              <p class="mt-2 text-[var(--color-ink)]/85">{p.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-3xl px-6 py-16">
+    <h2 class="font-display text-2xl font-extrabold tracking-tight text-[var(--color-ink)] md:text-3xl">
+      Get in touch
+    </h2>
+    <p class="mt-4 text-lg text-[var(--color-ink)]/90">
+      Questions, collaboration ideas, or just want to say hi?
+      <a class="text-[var(--color-accent)] underline-offset-4 hover:underline" href="mailto:info@fusiondance.nl">
+        info@fusiondance.nl
+      </a>
+    </p>
+    <p class="mt-4 text-[var(--color-muted)]">
+      Before you come to your first event, please take a moment to read our
+      <a class="text-[var(--color-accent)] underline-offset-4 hover:underline" href="/house-rules">house rules</a>.
+    </p>
+  </section>
+</BaseLayout>

@@ -1,0 +1,141 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  body?: string;
+  ctaHref?: string;
+  ctaLabel?: string;
+  illustration?: string;
+  illustrationAlt?: string;
+  imageTheme?: 'light' | 'dark';
+}
+
+const {
+  eyebrow,
+  title,
+  body,
+  ctaHref,
+  ctaLabel,
+  illustration,
+  illustrationAlt,
+  imageTheme = 'light',
+} = Astro.props;
+
+const hasImage = Boolean(illustration);
+const isDark = hasImage && imageTheme === 'dark';
+const isLight = hasImage && imageTheme === 'light';
+---
+
+<section
+  class:list={[
+    'hero relative isolate border-b border-[var(--color-line)]',
+    hasImage && 'hero--with-image',
+    isDark && 'hero--dark',
+    isLight && 'hero--light',
+  ]}
+  style={hasImage ? `--hero-image: url('${illustration}')` : undefined}
+  role={illustrationAlt ? 'img' : undefined}
+  aria-label={illustrationAlt}
+>
+  <div
+    class:list={[
+      'relative z-10 mx-auto max-w-5xl px-6 py-24 md:py-32',
+      hasImage && 'min-h-[26rem] md:min-h-[32rem]',
+    ]}
+  >
+    {
+      eyebrow && (
+        <p class="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-[var(--color-accent)]">
+          {eyebrow}
+        </p>
+      )
+    }
+    <h1
+      class:list={[
+        'max-w-3xl font-display text-4xl font-extrabold leading-[1.05] tracking-tight md:text-6xl',
+        hasImage ? 'text-white' : 'text-[var(--color-ink)]',
+      ]}
+    >
+      {title}
+    </h1>
+    {
+      body && (
+        <p
+          class:list={[
+            'mt-6 max-w-2xl text-lg md:text-xl',
+            hasImage ? 'text-white/90' : 'text-[var(--color-muted)]',
+          ]}
+        >
+          {body}
+        </p>
+      )
+    }
+    {
+      ctaHref && ctaLabel && (
+        <div class="mt-10">
+          <a
+            href={ctaHref}
+            class="inline-flex items-center gap-2 rounded-full bg-[var(--color-btn-bg)] px-6 py-3 font-medium !text-[var(--color-btn-text)] no-underline transition-colors hover:bg-[var(--color-btn-bg-hover)] hover:!text-[var(--color-btn-text)]"
+          >
+            {ctaLabel} →
+          </a>
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .hero--with-image {
+    background-image: var(--hero-image);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+  }
+
+  .hero--dark::before,
+  .hero--light::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .hero--dark::before {
+    background: linear-gradient(
+      105deg,
+      rgba(15, 8, 14, 0.75) 0%,
+      rgba(15, 8, 14, 0.55) 40%,
+      rgba(15, 8, 14, 0.3) 75%,
+      rgba(15, 8, 14, 0.15) 100%
+    );
+  }
+
+  .hero--light::before {
+    background: linear-gradient(
+      105deg,
+      rgba(15, 8, 14, 0.88) 0%,
+      rgba(15, 8, 14, 0.72) 40%,
+      rgba(15, 8, 14, 0.5) 75%,
+      rgba(15, 8, 14, 0.32) 100%
+    );
+  }
+
+  @media (max-width: 767px) {
+    .hero--dark::before {
+      background: linear-gradient(
+        180deg,
+        rgba(15, 8, 14, 0.55) 0%,
+        rgba(15, 8, 14, 0.65) 100%
+      );
+    }
+    .hero--light::before {
+      background: linear-gradient(
+        180deg,
+        rgba(15, 8, 14, 0.7) 0%,
+        rgba(15, 8, 14, 0.8) 100%
+      );
+    }
+  }
+</style>

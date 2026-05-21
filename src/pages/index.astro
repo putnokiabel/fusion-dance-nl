@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import EventCard from '../components/EventCard.astro';
+import { getUpcomingEvents } from '../lib/events';
+
+const upcoming = (await getUpcomingEvents()).slice(0, 3);
+---
+
+<BaseLayout
+  title="Fusion Dance NL"
+  description="A welcoming and inclusive fusion-dance community in the Netherlands. Monthly socials in Utrecht."
+>
+  <Hero
+    eyebrow="Utrecht · Netherlands"
+    title="Come dance fusion with us in the Netherlands."
+    body="Fusion Dance NL is a welcoming community of dancers blending lead/follow traditions with contact, blues, tango, and more. Monthly socials in Utrecht — all levels welcome."
+    ctaHref="/events"
+    ctaLabel="See upcoming events"
+    illustration="/images/hero-home.webp"
+    illustrationAlt="Fusion dancers connecting on the floor"
+    imageTheme="dark"
+  />
+
+  <section class="mx-auto max-w-5xl px-6 py-20">
+    <div class="flex items-end justify-between gap-6">
+      <h2 class="font-display text-3xl font-extrabold tracking-tight text-[var(--color-ink)] md:text-4xl">
+        Next on the floor
+      </h2>
+      <a href="/events" class="text-sm font-semibold text-[var(--color-accent)] hover:text-[var(--color-accent-soft)]">
+        All events →
+      </a>
+    </div>
+
+    {
+      upcoming.length === 0 ? (
+        <p class="mt-8 rounded-[var(--radius-card)] border border-dashed border-[var(--color-line)] p-8 text-center text-[var(--color-muted)]">
+          No upcoming events scheduled yet. Check back soon, or follow us for updates.
+        </p>
+      ) : (
+        <div class="mt-8 space-y-5">
+          {upcoming.map((event) => <EventCard event={event} />)}
+        </div>
+      )
+    }
+  </section>
+
+  <section class="surface-warm border-t border-[var(--color-line)]">
+    <div class="mx-auto grid max-w-5xl gap-12 px-6 py-20 md:grid-cols-2">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-[0.2em] text-[var(--color-accent)]">
+          What we're about
+        </p>
+        <h2 class="mt-3 font-display text-3xl font-extrabold tracking-tight text-[var(--color-ink)] md:text-4xl">
+          A safe, playful space for connection through movement.
+        </h2>
+        <p class="mt-6 text-[var(--color-ink)]/85">
+          We dance to a wide range of music, drawing on blues, tango, zouk, contact, and ecstatic
+          dance traditions. There's no single "right" way to dance fusion — we focus on listening,
+          consent, and shared improvisation.
+        </p>
+        <div class="mt-8">
+          <a href="/learn-more" class="inline-flex items-center gap-1 text-sm font-semibold text-[var(--color-accent)] hover:text-[var(--color-accent-soft)]">
+            Read more about us →
+          </a>
+        </div>
+      </div>
+
+      <ul class="grid gap-4 sm:grid-cols-2">
+        {
+          [
+            { title: 'Community', body: 'A safe, respectful environment where everyone contributes.' },
+            { title: 'Consent', body: 'Clear, ongoing boundaries — every invitation can be declined.' },
+            { title: 'Inclusivity', body: 'All bodies, backgrounds, and identities welcome.' },
+            { title: 'Fun', body: 'Curiosity, play, and joy over performance.' },
+          ].map((pillar) => (
+            <li class="rounded-[var(--radius-card)] border border-[var(--color-line)] bg-[var(--color-surface)] p-5">
+              <h3 class="font-display text-lg font-bold text-[var(--color-accent)]">{pillar.title}</h3>
+              <p class="mt-2 text-sm text-[var(--color-muted)]">{pillar.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</BaseLayout>

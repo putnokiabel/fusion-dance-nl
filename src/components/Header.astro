@@ -1,0 +1,102 @@
+---
+const path = Astro.url.pathname;
+const secondaryNav = [
+  { href: '/learn-more', label: 'Learn more' },
+  { href: '/house-rules', label: 'House Rules' },
+];
+const eventsHref = '/events';
+const isActive = (href: string) => path === href || path.startsWith(href + '/');
+---
+
+<header class="border-b border-[var(--color-line)]">
+  <div class="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
+    <a href="/" class="font-display text-xl font-extrabold tracking-tight text-[var(--color-accent)]">
+      Fusion Dance NL
+    </a>
+
+    <nav class="hidden items-center gap-8 text-sm font-medium md:flex">
+      {
+        secondaryNav.map((item) => (
+          <a
+            href={item.href}
+            class:list={[
+              'transition-colors hover:text-[var(--color-accent)]',
+              isActive(item.href) ? 'text-[var(--color-accent)]' : 'text-[var(--color-ink)]',
+            ]}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+      <a
+        href={eventsHref}
+        class:list={[
+          'rounded-full bg-[var(--color-btn-bg)] px-4 py-2 !text-[var(--color-btn-text)] no-underline transition-colors hover:bg-[var(--color-btn-bg-hover)] hover:!text-[var(--color-btn-text)]',
+          isActive(eventsHref) && 'ring-2 ring-offset-2 ring-offset-[var(--color-bg)] ring-[var(--color-accent-soft)]',
+        ]}
+      >
+        Events
+      </a>
+    </nav>
+
+    <button
+      type="button"
+      id="mobile-nav-toggle"
+      aria-expanded="false"
+      aria-controls="mobile-nav"
+      class="inline-flex h-10 w-10 items-center justify-center md:hidden"
+    >
+      <span class="sr-only">Open menu</span>
+      <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round" />
+      </svg>
+    </button>
+  </div>
+
+  <nav
+    id="mobile-nav"
+    hidden
+    class="border-t border-[var(--color-line)] md:hidden"
+  >
+    <ul class="mx-auto flex max-w-5xl flex-col gap-1 px-6 py-4 text-sm font-medium">
+      {
+        secondaryNav.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              class:list={[
+                'block rounded-md px-2 py-2',
+                isActive(item.href) ? 'text-[var(--color-accent)]' : 'text-[var(--color-ink)]',
+              ]}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+      <li>
+        <a
+          href={eventsHref}
+          class="mt-2 inline-block rounded-full bg-[var(--color-btn-bg)] px-4 py-2 !text-[var(--color-btn-text)] no-underline"
+        >
+          Events
+        </a>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<script>
+  const btn = document.getElementById('mobile-nav-toggle');
+  const nav = document.getElementById('mobile-nav');
+  btn?.addEventListener('click', () => {
+    const open = nav?.hasAttribute('hidden') === false;
+    if (open) {
+      nav?.setAttribute('hidden', '');
+      btn.setAttribute('aria-expanded', 'false');
+    } else {
+      nav?.removeAttribute('hidden');
+      btn.setAttribute('aria-expanded', 'true');
+    }
+  });
+</script>

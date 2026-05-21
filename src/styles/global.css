@@ -1,0 +1,77 @@
+@import "tailwindcss";
+@import "@fontsource/manrope/400.css";
+@import "@fontsource/manrope/500.css";
+@import "@fontsource/manrope/700.css";
+@import "@fontsource/manrope/800.css";
+
+@theme {
+  /* Surface colors (dark theme) */
+  --color-bg: #3a1635;                /* page bg — deeper plum than the button used to be */
+  --color-bg-warm: #4e2148;           /* warmer panel for cream-section equivalent */
+  --color-surface: #4e2148;           /* card bg, slightly lifted from page */
+  --color-surface-strong: #5d2c56;    /* more elevated surface */
+
+  /* Text colors */
+  --color-ink: #faf3ec;               /* primary text */
+  --color-ink-soft: rgba(250, 243, 236, 0.85);
+  --color-muted: #c9b6c1;             /* secondary text */
+
+  /* Borders */
+  --color-line: rgba(250, 243, 236, 0.13);
+  --color-line-strong: rgba(250, 243, 236, 0.22);
+
+  /* Accent palette */
+  --color-accent: #ee9a76;            /* warm orange — used for links, wordmark, eyebrows */
+  --color-accent-soft: #f5b59a;       /* lighter accent hover */
+  --color-accent-strong: #d97757;     /* deeper dusk */
+
+  /* Primary button */
+  --color-btn-bg: #ee9a76;
+  --color-btn-bg-hover: #f5b59a;
+  --color-btn-text: #2a1027;
+
+  /* Type */
+  --font-sans: "Manrope", system-ui, sans-serif;
+  --font-display: "Manrope", system-ui, sans-serif;
+  --radius-card: 1.25rem;
+}
+
+@layer base {
+  html {
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    color-scheme: dark;
+  }
+
+  body {
+    min-height: 100dvh;
+    background-color: var(--color-bg);
+    background-image:
+      radial-gradient(at 12% 8%, rgba(238, 154, 118, 0.16) 0px, transparent 55%),
+      radial-gradient(at 92% 18%, rgba(238, 154, 118, 0.10) 0px, transparent 60%),
+      radial-gradient(at 85% 92%, rgba(238, 154, 118, 0.08) 0px, transparent 50%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.04 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-attachment: fixed, fixed, fixed, fixed;
+    background-size: auto, auto, auto, 240px 240px;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-btn-text);
+  }
+}
+
+@utility surface-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+}
+
+@utility surface-warm {
+  background-color: var(--color-bg-warm);
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.05 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}

@@ -1,0 +1,142 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/Hero.astro';
+import { formatEventDate, formatEventTime } from '../../lib/events';
+
+export async function getStaticPaths() {
+  const events = await getCollection('events');
+  return events.map((event) => ({
+    params: { slug: event.id },
+    props: { event },
+  }));
+}
+
+const { event } = Astro.props;
+const { title, start, end, location, summary, description, link, image, cancelled } = event.data;
+
+const dateLabel = formatEventDate(start, end);
+const timeLabel = formatEventTime(start, end);
+const eyebrow = cancelled ? `Cancelled · ${dateLabel}` : dateLabel;
+const linkLabel = link?.includes('facebook.com')
+  ? 'View on Facebook'
+  : link?.includes('weticket.io')
+    ? 'Register / Tickets'
+    : 'Open event page';
+
+const urlPattern = /(https?:\/\/[^\s<]+)/g;
+function tokenize(line: string): Array<{ type: 'text' | 'url'; value: string }> {
+  const out: Array<{ type: 'text' | 'url'; value: string }> = [];
+  let lastIndex = 0;
+  let m: RegExpExecArray | null;
+  urlPattern.lastIndex = 0;
+  while ((m = urlPattern.exec(line)) !== null) {
+    if (m.index > lastIndex) out.push({ type: 'text', value: line.slice(lastIndex, m.index) });
+    out.push({ type: 'url', value: m[1] });
+    lastIndex = m.index + m[1].length;
+  }
+  if (lastIndex < line.length) out.push({ type: 'text', value: line.slice(lastIndex) });
+  return out;
+}
+const paragraphs: string[][] = description
+  ? description.split(/\n{2,}/).map((p) => p.split('\n'))
+  : [];
+---
+
+<BaseLayout title={title} description={summary ?? title}>
+  <Hero
+    eyebrow={eyebrow}
+    title={title}
+    illustration={image}
+    illustrationAlt={image ? `Photo for ${title}` : undefined}
+    imageTheme={image ? 'dark' : 'light'}
+  />
+
+  <section class="mx-auto max-w-3xl px-6 py-12">
+    <a
+      href="/events"
+      class="inline-flex items-center gap-1 text-sm text-[var(--color-accent)] hover:text-[var(--color-accent-soft)]"
+    >
+      ← All events
+    </a>
+
+    <dl class="mt-8 grid gap-6 rounded-[var(--radius-card)] border border-[var(--color-line)] bg-[var(--color-surface)] p-6 md:grid-cols-2">
+      <div>
+        <dt class="text-xs font-bold uppercase tracking-wider text-[var(--color-muted)]">When</dt>
+        <dd class="mt-2 text-[var(--color-ink)]">
+          <time datetime={start.toISOString()}>{dateLabel}</time><br />
+          <span class="text-[var(--color-muted)]">{timeLabel}</span>
+        </dd>
+      </div>
+      <div>
+        <dt class="text-xs font-bold uppercase tracking-wider text-[var(--color-muted)]">Where</dt>
+        <dd class="mt-2 text-[var(--color-ink)]">
+          {location.name}
+          {location.address && <><br /><span class="text-[var(--color-muted)]">{location.address}</span></>}
+          {
+            location.mapsUrl && (
+              <>
+                <br />
+                <a
+                  href={location.mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1 text-sm text-[var(--color-accent)] hover:text-[var(--color-accent-soft)]"
+                >
+                  Open in Maps →
+                </a>
+              </>
+            )
+          }
+        </dd>
+      </div>
+    </dl>
+
+    {
+      description ? (
+        <div class="mt-10 space-y-4 text-[var(--color-ink)]/90 leading-relaxed">
+          {paragraphs.map((lines) => (
+            <p>
+              {lines.map((line, i) => (
+                <>
+                  {tokenize(line).map((t) =>
+                    t.type === 'url' ? (
+                      <a
+                        href={t.value}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="break-all text-[var(--color-accent)] underline-offset-4 hover:underline"
+                      >
+                        {t.value}
+                      </a>
+                    ) : (
+                      t.value
+                    ),
+                  )}
+                  {i < lines.length - 1 && <br />}
+                </>
+              ))}
+            </p>
+          ))}
+        </div>
+      ) : summary ? (
+        <p class="mt-10 whitespace-pre-line text-[var(--color-ink)]/90 leading-relaxed">{summary}</p>
+      ) : null
+    }
+
+    {
+      link && !cancelled && (
+        <div class="mt-12">
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 rounded-full bg-[var(--color-btn-bg)] px-6 py-3 font-medium !text-[var(--color-btn-text)] no-underline transition-colors hover:bg-[var(--color-btn-bg-hover)] hover:!text-[var(--color-btn-text)]"
+          >
+            {linkLabel} →
+          </a>
+        </div>
+      )
+    }
+  </section>
+</BaseLayout>

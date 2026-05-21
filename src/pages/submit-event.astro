@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+
+const TALLY_FORM_ID = import.meta.env.PUBLIC_TALLY_FORM_ID ?? '';
+const tallyUrl = TALLY_FORM_ID ? `https://tally.so/embed/${TALLY_FORM_ID}?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1` : '';
+---
+
+<BaseLayout
+  title="Submit an event"
+  description="Submit a fusion-dance event for inclusion on Fusion Dance NL."
+>
+  <Hero
+    eyebrow="Submit an event"
+    title="Running a fusion event? Let us know."
+    body="Use the form below to submit your event. We'll review and publish it within a few days. Events submitted here are reviewed by an organiser before going live."
+  />
+
+  <section class="mx-auto max-w-3xl px-6 py-16">
+    {
+      tallyUrl ? (
+        <iframe
+          src={tallyUrl}
+          title="Submit an event"
+          loading="lazy"
+          frameborder="0"
+          width="100%"
+          height="800"
+          class="rounded-[var(--radius-card)] border border-[var(--color-line)] bg-[var(--color-surface)]"
+        />
+      ) : (
+        <div class="rounded-[var(--radius-card)] border border-dashed border-[var(--color-line)] bg-[var(--color-surface)] p-8 text-[var(--color-muted)]">
+          <p>
+            The event submission form isn't configured yet. Until it is, email your event
+            details to
+            <a class="text-[var(--color-accent)] underline-offset-4 hover:underline" href="mailto:info@fusiondance.nl">
+              info@fusiondance.nl
+            </a>
+            and we'll add it manually.
+          </p>
+          <p class="mt-3 text-xs">
+            <em>(Maintainers: set <code>PUBLIC_TALLY_FORM_ID</code> in your environment to enable the embedded form.)</em>
+          </p>
+        </div>
+      )
+    }
+  </section>
+</BaseLayout>

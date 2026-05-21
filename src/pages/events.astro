@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import EventCard from '../components/EventCard.astro';
+import { getUpcomingEvents, getPastEvents } from '../lib/events';
+
+const upcoming = await getUpcomingEvents();
+const past = await getPastEvents();
+---
+
+<BaseLayout
+  title="Events"
+  description="Upcoming and past fusion-dance events in the Netherlands."
+>
+  <Hero
+    eyebrow="Events"
+    title="Where we're dancing next."
+    body="Monthly socials and the occasional workshop. All events take place in Utrecht unless otherwise noted."
+    illustration="/images/hero-events.webp"
+    illustrationAlt="Fusion dancers at a Playground Utrecht event"
+    imageTheme="dark"
+  />
+
+  <section class="mx-auto max-w-5xl px-6 py-16">
+    <h2 class="font-display text-2xl font-extrabold tracking-tight text-[var(--color-ink)] md:text-3xl">
+      Upcoming
+    </h2>
+
+    {
+      upcoming.length === 0 ? (
+        <p class="mt-6 rounded-[var(--radius-card)] border border-dashed border-[var(--color-line)] p-8 text-center text-[var(--color-muted)]">
+          There are no upcoming events. Check back soon.
+        </p>
+      ) : (
+        <div class="mt-6 space-y-5">
+          {upcoming.map((event) => <EventCard event={event} />)}
+        </div>
+      )
+    }
+  </section>
+
+  {
+    past.length > 0 && (
+      <section class="border-t border-[var(--color-line)]">
+        <div class="mx-auto max-w-5xl px-6 py-16">
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center justify-between">
+              <h2 class="font-display text-2xl font-extrabold tracking-tight text-[var(--color-ink)] md:text-3xl">
+                Past events
+              </h2>
+              <span class="text-sm font-semibold text-[var(--color-accent)] group-open:hidden">
+                Show ({past.length}) →
+              </span>
+              <span class="hidden text-sm font-semibold text-[var(--color-accent)] group-open:inline">
+                Hide ↑
+              </span>
+            </summary>
+            <div class="mt-6 space-y-5">
+              {past.map((event) => <EventCard event={event} />)}
+            </div>
+          </details>
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>

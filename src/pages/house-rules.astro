@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+
+const rules = [
+  {
+    title: 'Consent is ongoing',
+    body: 'You can say no to a dance, any dance, at any time, for any reason — no explanation needed. The same goes for ending a dance early or adjusting how you\'re dancing mid-song.',
+  },
+  {
+    title: 'Ask before you change the connection',
+    body: 'Closer embrace, dips, lifts, weight sharing, floor work — these need a clear "yes" first. Default to lighter, more open connection until invited otherwise.',
+  },
+  {
+    title: 'Respect a no',
+    body: 'A no — verbal, physical, or hesitant — is not a negotiation. Don\'t ask why. Don\'t ask again later in the same evening. Don\'t make it awkward.',
+  },
+  {
+    title: 'Care for shared space',
+    body: 'Watch out for others on the floor. Move with awareness of who is around you. If you bump into someone, check in and apologise.',
+  },
+  {
+    title: 'Hygiene',
+    body: 'Come freshly washed. Bring a change of shirt for warm rooms. Use deodorant; go easy on strong scents.',
+  },
+  {
+    title: 'No drugs, mind alcohol',
+    body: 'No illegal substances on the premises. If you choose to drink, stay clearly within a state where you can dance safely and consent meaningfully.',
+  },
+  {
+    title: 'Photography',
+    body: 'No photos or video of dancers without their explicit consent. When in doubt, ask. Organisers may share occasional photos publicly only with the consent of everyone visible.',
+  },
+  {
+    title: 'Speak up',
+    body: 'If something or someone makes you uncomfortable, please talk to an organiser. We take every report seriously and act on patterns of behaviour, not just isolated incidents.',
+  },
+];
+---
+
+<BaseLayout
+  title="House Rules"
+  description="The agreements that make Fusion Dance NL a safe and welcoming space for everyone."
+>
+  <Hero
+    eyebrow="House Rules"
+    title="The agreements we share on the dance floor."
+    body="These rules exist so everyone can show up, dance, and feel safe. Coming to a Fusion Dance NL event means agreeing to them."
+    illustration="/images/hero-house-rules.webp"
+    illustrationAlt="Dancers connecting at a Fusion Dance NL social"
+    imageTheme="light"
+  />
+
+  <section class="mx-auto max-w-3xl px-6 py-16">
+    <ol class="space-y-8">
+      {
+        rules.map((rule, i) => (
+          <li class="flex gap-5">
+            <span class="font-display text-2xl font-extrabold text-[var(--color-accent)]">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <div>
+              <h2 class="font-display text-xl font-bold text-[var(--color-ink)]">
+                {rule.title}
+              </h2>
+              <p class="mt-2 text-[var(--color-ink)]/85">{rule.body}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="mt-16 rounded-[var(--radius-card)] border border-[var(--color-accent)]/40 bg-[var(--color-surface)] p-6">
+      <h2 class="font-display text-lg font-bold text-[var(--color-accent)]">
+        If something happens
+      </h2>
+      <p class="mt-2 text-[var(--color-ink)]/85">
+        Talk to an organiser at the event, or email
+        <a class="text-[var(--color-accent)] underline-offset-4 hover:underline" href="mailto:info@fusiondance.nl">
+          info@fusiondance.nl
+        </a>
+        . Reports are confidential. We will believe you.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

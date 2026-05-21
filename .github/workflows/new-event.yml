@@ -1,0 +1,48 @@
+name: Create event PR
+
+on:
+  repository_dispatch:
+    types: [new-event]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create_pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install script dependencies
+        run: npm install --no-save --no-audit --no-fund js-yaml@4 sharp@0.33 zod@3
+
+      - name: Generate event YAML + images
+        id: gen
+        env:
+          PAYLOAD: ${{ toJSON(github.event.client_payload) }}
+        run: node .github/scripts/create-event-pr.mjs
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: event/${{ steps.gen.outputs.slug }}
+          base: main
+          commit-message: "Add event: ${{ steps.gen.outputs.title }}"
+          title: "Add event: ${{ steps.gen.outputs.title }}"
+          body: |
+            Submitted via the public event-submission form.
+
+            **Title:** ${{ steps.gen.outputs.title }}
+            **Start:** ${{ steps.gen.outputs.start }}
+            **Submitter:** ${{ steps.gen.outputs.submitter_email }}
+
+            Review the YAML and any committed images before merging.
+          labels: |
+            new-event
+          delete-branch: true

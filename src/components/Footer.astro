@@ -1,0 +1,44 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-24 border-t border-[var(--color-line)]">
+  <div class="mx-auto grid max-w-5xl gap-10 px-6 py-12 md:grid-cols-3">
+    <div>
+      <p class="font-display text-lg font-extrabold tracking-tight text-[var(--color-accent)]">
+        Stichting Fusion Dance Utrecht
+      </p>
+      <p class="mt-2 text-sm text-[var(--color-muted)]">
+        A welcoming fusion-dance community in the Netherlands.
+      </p>
+      <p class="mt-2 text-xs text-[var(--color-muted)]">KvK 98315749</p>
+    </div>
+
+    <div>
+      <h3 class="text-xs font-bold uppercase tracking-wider text-[var(--color-muted)]">Contact</h3>
+      <ul class="mt-3 space-y-1 text-sm">
+        <li>
+          <a class="hover:text-[var(--color-accent)]" href="mailto:info@fusiondance.nl">
+            info@fusiondance.nl
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-xs font-bold uppercase tracking-wider text-[var(--color-muted)]">Site</h3>
+      <ul class="mt-3 space-y-1 text-sm">
+        <li><a class="hover:text-[var(--color-accent)]" href="/events">Events</a></li>
+        <li><a class="hover:text-[var(--color-accent)]" href="/learn-more">Learn more</a></li>
+        <li><a class="hover:text-[var(--color-accent)]" href="/house-rules">House Rules</a></li>
+        <li><a class="hover:text-[var(--color-accent)]" href="/submit-event">Submit an event</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-[var(--color-line)]">
+    <p class="mx-auto max-w-5xl px-6 py-4 text-xs text-[var(--color-muted)]">
+      © {year} Stichting Fusion Dance Utrecht
+    </p>
+  </div>
+</footer>
