@@ -51,19 +51,54 @@ interface EventSubmission {
 const REQUIRED_LABELS = {
   submitterEmail: 'Submitter email',
   title: 'Title',
-  start: 'Start',
+  startDate: 'Start date',
+  startTime: 'Start time',
   venueName: 'Venue name',
   address: 'Address',
 } as const;
 
 const OPTIONAL_LABELS = {
-  end: 'End',
+  endDate: 'End date',
+  endTime: 'End time',
   mapsUrl: 'Maps URL',
   summary: 'Summary',
   description: 'Description',
   link: 'Link',
   images: 'Images',
 } as const;
+
+// Last Sunday of a given (0-indexed) month, returned as day-of-month.
+function lastSundayOf(year: number, monthZeroIndexed: number): number {
+  const lastDay = new Date(Date.UTC(year, monthZeroIndexed + 1, 0));
+  return lastDay.getUTCDate() - lastDay.getUTCDay();
+}
+
+// Combine a "YYYY-MM-DD" date and "HH:MM[:SS]" time into an ISO 8601 datetime
+// with the correct Europe/Amsterdam offset (CET +01:00 or CEST +02:00).
+// EU DST: last Sunday of March 01:00 UTC → last Sunday of October 01:00 UTC.
+function toAmsterdamIso(dateStr: string, timeStr: string): string | null {
+  const dateMatch = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const timeMatch = timeStr.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+  if (!dateMatch || !timeMatch) return null;
+
+  const Y = Number(dateMatch[1]);
+  const M = Number(dateMatch[2]);
+  const D = Number(dateMatch[3]);
+  const h = Number(timeMatch[1]);
+  const m = Number(timeMatch[2]);
+  const s = Number(timeMatch[3] ?? '0');
+
+  if (M < 1 || M > 12 || D < 1 || D > 31 || h > 23 || m > 59 || s > 59) return null;
+
+  const dstStartUtc = Date.UTC(Y, 2, lastSundayOf(Y, 2), 1, 0, 0);
+  const dstEndUtc = Date.UTC(Y, 9, lastSundayOf(Y, 9), 1, 0, 0);
+  const localAsUtc = Date.UTC(Y, M - 1, D, h, m, s);
+  const isDst = localAsUtc >= dstStartUtc && localAsUtc < dstEndUtc;
+  const offset = isDst ? '+02:00' : '+01:00';
+
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${Y}-${pad(M)}-${pad(D)}T${pad(h)}:${pad(m)}:${pad(s)}${offset}`;
+}
 
 function findField(fields: TallyField[], labelPrefix: string): TallyField | undefined {
   const needle = labelPrefix.toLowerCase();
@@ -92,12 +127,22 @@ function reshape(payload: TallyPayload): { ok: true; submission: EventSubmission
     required[key] = v;
   }
 
-  if (Number.isNaN(Date.parse(required.start!))) {
-    return { ok: false, error: 'Start date is not a valid ISO datetime' };
+  const startIso = toAmsterdamIso(required.startDate!, required.startTime!);
+  if (!startIso) {
+    return { ok: false, error: 'Start date or time is malformed (expected YYYY-MM-DD and HH:MM)' };
   }
-  const endRaw = asString(findField(fields, OPTIONAL_LABELS.end)?.value);
-  if (endRaw && Number.isNaN(Date.parse(endRaw))) {
-    return { ok: false, error: 'End date is not a valid ISO datetime' };
+
+  const endDateRaw = asString(findField(fields, OPTIONAL_LABELS.endDate)?.value);
+  const endTimeRaw = asString(findField(fields, OPTIONAL_LABELS.endTime)?.value);
+  let endIso: string | undefined;
+  if (endDateRaw && endTimeRaw) {
+    const combined = toAmsterdamIso(endDateRaw, endTimeRaw);
+    if (!combined) {
+      return { ok: false, error: 'End date or time is malformed (expected YYYY-MM-DD and HH:MM)' };
+    }
+    endIso = combined;
+  } else if (endDateRaw || endTimeRaw) {
+    return { ok: false, error: 'End requires both End date and End time, or neither' };
   }
 
   return {
@@ -105,8 +150,8 @@ function reshape(payload: TallyPayload): { ok: true; submission: EventSubmission
     submission: {
       submitterEmail: required.submitterEmail!,
       title: required.title!,
-      start: required.start!,
-      end: endRaw,
+      start: startIso,
+      end: endIso,
       venueName: required.venueName!,
       address: required.address!,
       mapsUrl: asString(findField(fields, OPTIONAL_LABELS.mapsUrl)?.value),
