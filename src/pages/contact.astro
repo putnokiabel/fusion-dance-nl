@@ -1,0 +1,98 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
+const CONTACT_EMAIL = import.meta.env.PUBLIC_CONTACT_EMAIL ?? '';
+const SIGNAL_INVITE_URL = import.meta.env.PUBLIC_SIGNAL_INVITE_URL ?? '';
+
+const configured = TURNSTILE_SITE_KEY && CONTACT_EMAIL && SIGNAL_INVITE_URL;
+---
+
+<BaseLayout
+  title="Contact"
+  description="Get in touch with Stichting Fusion Dance Utrecht."
+>
+  <Hero
+    eyebrow="Contact"
+    title="Get in touch"
+    body="Complete the check below to reveal our email address and the invite link to our community Signal group."
+  />
+
+  <section class="mx-auto max-w-3xl px-6 py-16">
+    {
+      configured ? (
+        <div class="rounded-[var(--radius-card)] border border-[var(--color-line)] bg-[var(--color-surface)] p-8">
+          <div
+            class="cf-turnstile"
+            data-sitekey={TURNSTILE_SITE_KEY}
+            data-callback="onTurnstileSuccess"
+            data-theme="dark"
+          />
+
+          <div id="contact-reveal" hidden class="mt-8 space-y-4 text-[var(--color-ink)]/90" />
+
+          <p class="mt-6 text-xs text-[var(--color-muted)]">
+            Having trouble? Try refreshing the page.
+          </p>
+        </div>
+      ) : (
+        <div class="rounded-[var(--radius-card)] border border-dashed border-[var(--color-line)] bg-[var(--color-surface)] p-8 text-[var(--color-muted)]">
+          <p>
+            The contact page isn't fully configured yet. Please check back soon.
+          </p>
+          <p class="mt-3 text-xs">
+            <em>
+              (Maintainers: set <code>PUBLIC_TURNSTILE_SITE_KEY</code>,
+              <code>PUBLIC_CONTACT_EMAIL</code>, and <code>PUBLIC_SIGNAL_INVITE_URL</code>
+              in your environment to enable this page.)
+            </em>
+          </p>
+        </div>
+      )
+    }
+  </section>
+
+  {
+    configured && (
+      <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
+      <script define:vars={{ CONTACT_EMAIL, SIGNAL_INVITE_URL }}>
+        window.onTurnstileSuccess = () => {
+          const target = document.getElementById('contact-reveal');
+          if (!target || !target.hasAttribute('hidden')) return;
+
+          const linkClass =
+            'text-[var(--color-accent)] underline-offset-4 hover:underline break-all';
+
+          const emailRow = document.createElement('p');
+          const emailLabel = document.createElement('span');
+          emailLabel.className = 'block text-xs uppercase tracking-wider text-[var(--color-muted)]';
+          emailLabel.textContent = 'Email';
+          const emailLink = document.createElement('a');
+          emailLink.className = linkClass;
+          emailLink.href = 'mailto:' + CONTACT_EMAIL;
+          emailLink.textContent = CONTACT_EMAIL;
+          emailRow.appendChild(emailLabel);
+          emailRow.appendChild(emailLink);
+
+          const signalRow = document.createElement('p');
+          const signalLabel = document.createElement('span');
+          signalLabel.className = 'block text-xs uppercase tracking-wider text-[var(--color-muted)]';
+          signalLabel.textContent = 'Signal group';
+          const signalLink = document.createElement('a');
+          signalLink.className = linkClass;
+          signalLink.href = SIGNAL_INVITE_URL;
+          signalLink.rel = 'noopener noreferrer';
+          signalLink.target = '_blank';
+          signalLink.textContent = 'Join our community Signal group';
+          signalRow.appendChild(signalLabel);
+          signalRow.appendChild(signalLink);
+
+          target.appendChild(emailRow);
+          target.appendChild(signalRow);
+          target.removeAttribute('hidden');
+        };
+      </script>
+    )
+  }
+</BaseLayout>

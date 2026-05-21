@@ -3,6 +3,7 @@ const path = Astro.url.pathname;
 const secondaryNav = [
   { href: '/learn-more', label: 'Learn more' },
   { href: '/house-rules', label: 'House Rules' },
+  { href: '/contact', label: 'Contact' },
 ];
 const eventsHref = '/events';
 const isActive = (href: string) => path === href || path.startsWith(href + '/');

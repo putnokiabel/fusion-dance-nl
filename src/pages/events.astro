@@ -26,6 +26,11 @@ const past = await getPastEvents();
       Upcoming
     </h2>
 
+    <p class="mt-3 text-sm text-[var(--color-muted)]">
+      Some events (e.g. house parties, spontaneous gatherings) are only posted in our community Signal group.
+      <a class="text-[var(--color-accent)] underline-offset-4 hover:underline" href="/contact">Get the invite →</a>
+    </p>
+
     {
       upcoming.length === 0 ? (
         <p class="mt-6 rounded-[var(--radius-card)] border border-dashed border-[var(--color-line)] p-8 text-center text-[var(--color-muted)]">

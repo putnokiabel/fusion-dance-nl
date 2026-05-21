@@ -40,6 +40,9 @@ jobs:
         run: npm run build
         env:
           PUBLIC_TALLY_FORM_ID: ${{ vars.PUBLIC_TALLY_FORM_ID }}
+          PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.PUBLIC_TURNSTILE_SITE_KEY }}
+          PUBLIC_CONTACT_EMAIL: ${{ vars.PUBLIC_CONTACT_EMAIL }}
+          PUBLIC_SIGNAL_INVITE_URL: ${{ vars.PUBLIC_SIGNAL_INVITE_URL }}
 
       - name: Deploy to Firebase Hosting (live)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
