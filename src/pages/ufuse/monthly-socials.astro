@@ -1,0 +1,117 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/Hero.astro';
+
+const schedule = [
+  { time: '18:45', label: 'Doors open' },
+  { time: '19:00 – 20:00', label: 'Beginner-friendly workshop' },
+  { time: '20:00 – 23:00', label: 'Social dancing with two DJ sets' },
+];
+---
+
+<BaseLayout
+  title="UFuse Monthly Socials"
+  description="UFuse's monthly fusion social at Centrum EMMA in Utrecht — every second Friday of the month."
+>
+  <Hero
+    eyebrow="UFuse · Monthly Socials"
+    title="Every second Friday, fusion at Centrum EMMA."
+    body="UFuse hosts a monthly fusion social in Utrecht. Each evening opens with a beginner-friendly workshop and continues with a long social dance."
+    illustration="/images/ufuse-monthly-social.webp"
+    illustrationAlt="Dancers at a UFuse monthly social"
+    imageTheme="dark"
+  />
+
+  <section class="mx-auto max-w-3xl px-6 py-16">
+    <div class="grid gap-6 md:grid-cols-2">
+      <div class="rounded-[var(--radius-card)] border border-[var(--color-line)] bg-[var(--color-surface)] p-6">
+        <h2 class="font-display text-xl font-bold text-[var(--color-accent)]">When</h2>
+        <p class="mt-2 text-[var(--color-ink)]/90">
+          The second Friday of the month, as a general rule. Doors at 18:45,
+          dancing until 23:00.
+        </p>
+        <p class="mt-3 text-sm text-[var(--color-muted)]">
+          Check the <a class="text-[var(--color-accent)] underline-offset-4 hover:underline" href="/events">events page</a>
+          for the next date and the workshop details.
+        </p>
+      </div>
+
+      <div class="rounded-[var(--radius-card)] border border-[var(--color-line)] bg-[var(--color-surface)] p-6">
+        <h2 class="font-display text-xl font-bold text-[var(--color-accent)]">Where</h2>
+        <p class="mt-2 text-[var(--color-ink)]/90">
+          Centrum EMMA<br />
+          Cremerstraat 245, 3532 BJ Utrecht
+        </p>
+        <p class="mt-3 text-sm">
+          <a
+            class="text-[var(--color-accent)] underline-offset-4 hover:underline"
+            href="https://www.google.com/maps/search/?api=1&query=Cremerstraat+245+Utrecht"
+            target="_blank"
+            rel="noopener"
+          >
+            Open in Maps
+          </a>
+          ·
+          <a
+            class="text-[var(--color-accent)] underline-offset-4 hover:underline"
+            href="https://www.prettigparkeren.nl/kaart/#!Utrecht/Cremerstraat_245/"
+            target="_blank"
+            rel="noopener"
+          >
+            Parking info
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <h2 class="mt-16 font-display text-3xl font-extrabold tracking-tight text-[var(--color-ink)] md:text-4xl">
+      How an evening looks
+    </h2>
+    <ul class="mt-6 space-y-3">
+      {
+        schedule.map((row) => (
+          <li class="flex gap-4 rounded-[var(--radius-card)] border border-[var(--color-line)] bg-[var(--color-surface)] p-4">
+            <span class="min-w-[7.5rem] font-display font-bold text-[var(--color-accent)]">{row.time}</span>
+            <span class="text-[var(--color-ink)]/90">{row.label}</span>
+          </li>
+        ))
+      }
+    </ul>
+
+    <h2 class="mt-16 font-display text-2xl font-extrabold tracking-tight text-[var(--color-ink)] md:text-3xl">
+      The workshop
+    </h2>
+    <p class="mt-4 text-lg text-[var(--color-ink)]/90">
+      Every social opens with an hour-long workshop, taught by a rotating
+      guest. The workshops are pitched to be approachable for newcomers while
+      still giving experienced dancers something to chew on. No partner needed
+      — everyone rotates.
+    </p>
+
+    <h2 class="mt-12 font-display text-2xl font-extrabold tracking-tight text-[var(--color-ink)] md:text-3xl">
+      The social dance
+    </h2>
+    <p class="mt-4 text-lg text-[var(--color-ink)]/90">
+      After the workshop, two DJ sets carry the floor until 23:00. Expect a
+      wide range of music — blues, tango, west coast swing, balfolk, electronic
+      — and dancers happy to mix roles and styles.
+    </p>
+
+    <h2 class="mt-12 font-display text-2xl font-extrabold tracking-tight text-[var(--color-ink)] md:text-3xl">
+      Practical bits
+    </h2>
+    <ul class="mt-4 space-y-2 text-lg text-[var(--color-ink)]/90">
+      <li><strong class="text-[var(--color-ink)]">Price:</strong> €8 at the door, cash or QR. The door covers space rental. If money is the reason you wouldn't come, pay less or nothing — please come anyway.</li>
+      <li><strong class="text-[var(--color-ink)]">Refreshments:</strong> Free water and tea. Bring your own snacks if you like. No alcohol.</li>
+      <li><strong class="text-[var(--color-ink)]">House rules:</strong> Please read the <a class="text-[var(--color-accent)] underline-offset-4 hover:underline" href="/ufuse/house-rules">UFuse house rules</a> before your first social.</li>
+    </ul>
+
+    <div class="mt-16 rounded-[var(--radius-card)] border border-[var(--color-accent)]/40 bg-[var(--color-surface)] p-6">
+      <h2 class="font-display text-lg font-bold text-[var(--color-accent)]">Want to teach, DJ, or help out?</h2>
+      <p class="mt-2 text-[var(--color-ink)]/85">
+        Reach out via our <a class="text-[var(--color-accent)] underline-offset-4 hover:underline" href="/contact">contact page</a>
+        — we love hearing from people who want to contribute.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

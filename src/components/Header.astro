@@ -1,8 +1,20 @@
 ---
 const path = Astro.url.pathname;
-const secondaryNav = [
+
+type NavItem =
+  | { href: string; label: string }
+  | { label: string; match: string; children: { href: string; label: string }[] };
+
+const secondaryNav: NavItem[] = [
   { href: '/learn-more', label: 'Learn more' },
-  { href: '/house-rules', label: 'House Rules' },
+  {
+    label: 'UFuse',
+    match: '/ufuse',
+    children: [
+      { href: '/ufuse/monthly-socials', label: 'Monthly socials' },
+      { href: '/ufuse/house-rules', label: 'House rules' },
+    ],
+  },
   { href: '/contact', label: 'Contact' },
 ];
 const eventsHref = '/events';
@@ -17,17 +29,52 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
 
     <nav class="hidden items-center gap-8 text-sm font-medium md:flex">
       {
-        secondaryNav.map((item) => (
-          <a
-            href={item.href}
-            class:list={[
-              'transition-colors hover:text-[var(--color-accent)]',
-              isActive(item.href) ? 'text-[var(--color-accent)]' : 'text-[var(--color-ink)]',
-            ]}
-          >
-            {item.label}
-          </a>
-        ))
+        secondaryNav.map((item) =>
+          'children' in item ? (
+            <div class="group relative">
+              <button
+                type="button"
+                aria-haspopup="true"
+                class:list={[
+                  'inline-flex items-center gap-1 transition-colors hover:text-[var(--color-accent)] focus:text-[var(--color-accent)] focus:outline-none',
+                  isActive(item.match) ? 'text-[var(--color-accent)]' : 'text-[var(--color-ink)]',
+                ]}
+              >
+                {item.label}
+                <svg viewBox="0 0 12 12" class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M3 5l3 3 3-3" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+              <div class="invisible absolute left-1/2 top-full z-10 -translate-x-1/2 pt-2 opacity-0 transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                <ul class="min-w-[12rem] rounded-[var(--radius-card)] border border-[var(--color-line)] bg-[var(--color-surface)] py-2 shadow-lg">
+                  {item.children.map((child) => (
+                    <li>
+                      <a
+                        href={child.href}
+                        class:list={[
+                          'block px-4 py-2 transition-colors hover:text-[var(--color-accent)]',
+                          isActive(child.href) ? 'text-[var(--color-accent)]' : 'text-[var(--color-ink)]',
+                        ]}
+                      >
+                        {child.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ) : (
+            <a
+              href={item.href}
+              class:list={[
+                'transition-colors hover:text-[var(--color-accent)]',
+                isActive(item.href) ? 'text-[var(--color-accent)]' : 'text-[var(--color-ink)]',
+              ]}
+            >
+              {item.label}
+            </a>
+          )
+        )
       }
       <a
         href={eventsHref}
@@ -61,19 +108,47 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
   >
     <ul class="mx-auto flex max-w-5xl flex-col gap-1 px-6 py-4 text-sm font-medium">
       {
-        secondaryNav.map((item) => (
-          <li>
-            <a
-              href={item.href}
-              class:list={[
-                'block rounded-md px-2 py-2',
-                isActive(item.href) ? 'text-[var(--color-accent)]' : 'text-[var(--color-ink)]',
-              ]}
-            >
-              {item.label}
-            </a>
-          </li>
-        ))
+        secondaryNav.map((item) =>
+          'children' in item ? (
+            <li>
+              <p
+                class:list={[
+                  'px-2 pt-2 text-xs font-bold uppercase tracking-wider',
+                  isActive(item.match) ? 'text-[var(--color-accent)]' : 'text-[var(--color-muted)]',
+                ]}
+              >
+                {item.label}
+              </p>
+              <ul class="mt-1 flex flex-col gap-1">
+                {item.children.map((child) => (
+                  <li>
+                    <a
+                      href={child.href}
+                      class:list={[
+                        'block rounded-md px-4 py-2',
+                        isActive(child.href) ? 'text-[var(--color-accent)]' : 'text-[var(--color-ink)]',
+                      ]}
+                    >
+                      {child.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ) : (
+            <li>
+              <a
+                href={item.href}
+                class:list={[
+                  'block rounded-md px-2 py-2',
+                  isActive(item.href) ? 'text-[var(--color-accent)]' : 'text-[var(--color-ink)]',
+                ]}
+              >
+                {item.label}
+              </a>
+            </li>
+          )
+        )
       }
       <li>
         <a

@@ -103,6 +103,7 @@ GitHub repo secret: `FIREBASE_SERVICE_ACCOUNT` (for the deploy workflow). GitHub
 
 ## Conventions / preferences
 
+- **Never hard-code a contact email address anywhere on the site.** Do not write `info@fusiondance.nl` (it's wrong) or any literal `mailto:` to a real address in markup. The real contact email is revealed on [src/pages/contact.astro](src/pages/contact.astro) via `PUBLIC_CONTACT_EMAIL` after a Turnstile challenge, which keeps it out of scrapers. Everywhere else — house rules, monthly socials, learn-more, submit-event, footer, etc. — link to `/contact` instead.
 - Don't add a `bg-white` anywhere — site is dark; use `bg-[var(--color-surface)]`.
 - Don't introduce a light/dark theme toggle unless explicitly asked — site is intentionally dark-only for now.
 - Don't gratuitously add accent colours; warm orange (`--color-accent`) is the single accent. Plum is bg; cream is text.
