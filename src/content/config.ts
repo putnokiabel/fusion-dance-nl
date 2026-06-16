@@ -5,16 +5,16 @@ const events = defineCollection({
   schema: z.object({
     title: z.string(),
     start: z.coerce.date(),
-    end: z.coerce.date().optional(),
+    end: z.coerce.date().nullish(),
     location: z.object({
       name: z.string(),
-      address: z.string().optional(),
-      mapsUrl: z.string().url().optional(),
+      address: z.string().nullish(),
+      mapsUrl: z.string().url().nullish(),
     }),
-    summary: z.string().max(400).optional(),
-    description: z.string().optional(),
-    link: z.string().url().optional(),
-    image: z.string().optional(),
+    summary: z.string().max(400).nullish(),
+    description: z.string().nullish(),
+    link: z.string().url().nullish(),
+    image: z.string().nullish(),
     cancelled: z.boolean().default(false),
   }),
 });
