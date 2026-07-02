@@ -52,12 +52,12 @@ const REQUIRED_LABELS = {
   submitterEmail: 'Submitter email',
   title: 'Title',
   startDate: 'Start date',
-  startTime: 'Start time',
   venueName: 'Venue name',
   address: 'Address',
 } as const;
 
 const OPTIONAL_LABELS = {
+  startTime: 'Start time',
   endDate: 'End date',
   endTime: 'End time',
   mapsUrl: 'Maps URL',
@@ -66,6 +66,11 @@ const OPTIONAL_LABELS = {
   link: 'Link',
   images: 'Images',
 } as const;
+
+// Default time-of-day used when a date is submitted without an accompanying time.
+// Start falls back to the very beginning of the day, end to the very end.
+const DEFAULT_START_TIME = '00:00';
+const DEFAULT_END_TIME = '23:59';
 
 // Last Sunday of a given (0-indexed) month, returned as day-of-month.
 function lastSundayOf(year: number, monthZeroIndexed: number): number {
@@ -127,22 +132,25 @@ function reshape(payload: TallyPayload): { ok: true; submission: EventSubmission
     required[key] = v;
   }
 
-  const startIso = toAmsterdamIso(required.startDate!, required.startTime!);
+  // Start time is optional; fall back to midnight so a date-only submission still works.
+  const startTimeRaw = asString(findField(fields, OPTIONAL_LABELS.startTime)?.value);
+  const startIso = toAmsterdamIso(required.startDate!, startTimeRaw ?? DEFAULT_START_TIME);
   if (!startIso) {
     return { ok: false, error: 'Start date or time is malformed (expected YYYY-MM-DD and HH:MM)' };
   }
 
+  // End is entirely optional. An end time without an end date is meaningless, so
+  // an end datetime is produced only when an end date is present; a stray end time
+  // is ignored rather than rejected (the Tally form does not pair the two fields).
   const endDateRaw = asString(findField(fields, OPTIONAL_LABELS.endDate)?.value);
   const endTimeRaw = asString(findField(fields, OPTIONAL_LABELS.endTime)?.value);
   let endIso: string | undefined;
-  if (endDateRaw && endTimeRaw) {
-    const combined = toAmsterdamIso(endDateRaw, endTimeRaw);
+  if (endDateRaw) {
+    const combined = toAmsterdamIso(endDateRaw, endTimeRaw ?? DEFAULT_END_TIME);
     if (!combined) {
       return { ok: false, error: 'End date or time is malformed (expected YYYY-MM-DD and HH:MM)' };
     }
     endIso = combined;
-  } else if (endDateRaw || endTimeRaw) {
-    return { ok: false, error: 'End requires both End date and End time, or neither' };
   }
 
   return {
@@ -185,7 +193,9 @@ async function dispatchToGithub(submission: EventSubmission, owner: string, repo
     },
     body: JSON.stringify({
       event_type: 'new-event',
-      client_payload: submission,
+      // Nest under a single property: GitHub caps client_payload at 10 top-level
+      // properties, and EventSubmission has more than that.
+      client_payload: { submission },
     }),
   });
 
