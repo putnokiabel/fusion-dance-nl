@@ -72,15 +72,25 @@ const OPTIONAL_LABELS = {
 const DEFAULT_START_TIME = '00:00';
 const DEFAULT_END_TIME = '23:59';
 
-// Last Sunday of a given (0-indexed) month, returned as day-of-month.
-function lastSundayOf(year: number, monthZeroIndexed: number): number {
-  const lastDay = new Date(Date.UTC(year, monthZeroIndexed + 1, 0));
-  return lastDay.getUTCDate() - lastDay.getUTCDay();
+const AMSTERDAM_OFFSET_FMT = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'Europe/Amsterdam',
+  timeZoneName: 'longOffset',
+});
+
+// Europe/Amsterdam UTC offset in minutes at the given instant (60 for CET, 120 for CEST).
+function amsterdamOffsetMinutes(utcMs: number): number {
+  const name = AMSTERDAM_OFFSET_FMT.formatToParts(new Date(utcMs)).find((p) => p.type === 'timeZoneName')!.value;
+  const match = name.match(/^GMT([+-])(\d{2}):(\d{2})$/);
+  if (!match) return 0; // "GMT" with no suffix means +00:00
+  const minutes = Number(match[2]) * 60 + Number(match[3]);
+  return match[1] === '-' ? -minutes : minutes;
 }
 
 // Combine a "YYYY-MM-DD" date and "HH:MM[:SS]" time into an ISO 8601 datetime
-// with the correct Europe/Amsterdam offset (CET +01:00 or CEST +02:00).
-// EU DST: last Sunday of March 01:00 UTC → last Sunday of October 01:00 UTC.
+// with the correct Europe/Amsterdam offset (CET +01:00 or CEST +02:00), taken from
+// the runtime's timezone database. On the October DST night, a repeated local time
+// gets the earlier (CEST) offset; on the March night, a skipped local time (02:xx)
+// is moved forward by one hour, matching Temporal's "compatible" disambiguation.
 function toAmsterdamIso(dateStr: string, timeStr: string): string | null {
   const dateMatch = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   const timeMatch = timeStr.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
@@ -95,14 +105,21 @@ function toAmsterdamIso(dateStr: string, timeStr: string): string | null {
 
   if (M < 1 || M > 12 || D < 1 || D > 31 || h > 23 || m > 59 || s > 59) return null;
 
-  const dstStartUtc = Date.UTC(Y, 2, lastSundayOf(Y, 2), 1, 0, 0);
-  const dstEndUtc = Date.UTC(Y, 9, lastSundayOf(Y, 9), 1, 0, 0);
   const localAsUtc = Date.UTC(Y, M - 1, D, h, m, s);
-  const isDst = localAsUtc >= dstStartUtc && localAsUtc < dstEndUtc;
-  const offset = isDst ? '+02:00' : '+01:00';
+  const before = amsterdamOffsetMinutes(localAsUtc - 24 * 3600_000);
+  const after = amsterdamOffsetMinutes(localAsUtc + 24 * 3600_000);
+  const candidates = [...new Set([Math.max(before, after), Math.min(before, after)])];
+  let instant = candidates
+    .map((offset) => localAsUtc - offset * 60_000)
+    .find((t, i) => amsterdamOffsetMinutes(t) === candidates[i]);
+  // Skipped local time (spring forward): interpret with the pre-transition offset.
+  if (instant === undefined) instant = localAsUtc - before * 60_000;
 
+  const offsetMin = amsterdamOffsetMinutes(instant);
+  const wall = new Date(instant + offsetMin * 60_000);
   const pad = (n: number) => String(n).padStart(2, '0');
-  return `${Y}-${pad(M)}-${pad(D)}T${pad(h)}:${pad(m)}:${pad(s)}${offset}`;
+  const offset = `${offsetMin < 0 ? '-' : '+'}${pad(Math.floor(Math.abs(offsetMin) / 60))}:${pad(Math.abs(offsetMin) % 60)}`;
+  return `${wall.getUTCFullYear()}-${pad(wall.getUTCMonth() + 1)}-${pad(wall.getUTCDate())}T${pad(wall.getUTCHours())}:${pad(wall.getUTCMinutes())}:${pad(wall.getUTCSeconds())}${offset}`;
 }
 
 function findField(fields: TallyField[], labelPrefix: string): TallyField | undefined {

@@ -36,7 +36,7 @@ Events have a deliberate two-field split:
 
 If only `summary` is set, the detail page falls back to showing it as the body.
 
-`start` / `end` are ISO datetimes with explicit Europe/Amsterdam offset (`+01:00` or `+02:00` depending on DST). The Tally → Function path combines separate `Start date` + `Start time` fields and computes the right offset (last Sunday of March 01:00 UTC → last Sunday of October 01:00 UTC). DO NOT use `Z`/UTC in event YAMLs — keep the local offset so the file is human-readable.
+`start` / `end` are ISO datetimes with explicit Europe/Amsterdam offset (`+01:00` or `+02:00` depending on DST). The Tally → Function path combines separate `Start date` + `Start time` fields and computes the right offset from the runtime's timezone database via `Intl` (a skipped spring-forward time like 02:30 moves to 03:30; a repeated autumn time gets `+02:00`). DO NOT use `Z`/UTC in event YAMLs — keep the local offset so the file is human-readable. The Zod schema enforces this: values must be quoted strings (unquoted YAML timestamps are parsed as Dates and lose the offset) and the offset must match Amsterdam DST on that date, otherwise the build fails.
 
 ## Theme
 
