@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+  # Nightly rebuild so past events drop off the static pages.
+  schedule:
+    - cron: '0 3 * * *'
 
 permissions:
   contents: read
@@ -45,7 +48,7 @@ jobs:
           PUBLIC_SIGNAL_INVITE_URL: ${{ vars.PUBLIC_SIGNAL_INVITE_URL }}
 
       - name: Deploy to Firebase Hosting (live)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
